@@ -4,7 +4,8 @@ This repository contains the official implementation of the paper: [Introducing 
 
 ## Usage
 
-To run the code, execute the following command in the terminal:
+1. Add dataset txt file into /data folder.
+2. Execute the following command in the terminal:
 
 ```bash
 python3 run_exp/itransformer.py --cuda 0 --data 0 --len 0 --basic --model 0
