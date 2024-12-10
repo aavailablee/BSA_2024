@@ -37,9 +37,8 @@ If you use this repository in your research, please cite:
 @inproceedings{2024BSA,
   title={Introducing Spectral Attention for Long-Range Dependency in Time Series Forecasting},
   author={Kang, Bong Gyun and Lee, Dongjun and Kim, HyunGi and Chung, DoHyun and Yoon, Sungroh},
-  booktitle={Proceedings of the Conference on Neural Information Processing Systems},
+  booktitle={Advances in Neural Information Processing Systems},
   year={2024},
-  organization={Neural Information Processing Systems Foundation}
 }
 ```
 
