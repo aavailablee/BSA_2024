@@ -29,6 +29,20 @@ python3 run_exp/itransformer.py --cuda 0 --data 0 --len 0 --basic --model 0
 
 This project is built on the [Time-Series-Library GitHub Repository](https://github.com/thuml/Time-Series-Library), with modifications. Therefore, if you want to try other models, you can use the updated model Python files from this GitHub repository.
 
+## Citation
+
+If you use this repository in your research, please cite:
+
+```bibtex
+@inproceedings{2024BSA,
+  title={Introducing Spectral Attention for Long-Range Dependency in Time Series Forecasting},
+  author={Kang, Bong Gyun and Lee, Dongjun and Kim, HyunGi and Chung, DoHyun and Yoon, Sungroh},
+  booktitle={Proceedings of the Conference on Neural Information Processing Systems},
+  year={2024},
+  organization={Neural Information Processing Systems Foundation}
+}
+```
+
 ## Contact
 - Dongjun Lee (elite1717@snu.ac.kr)
 - Bong Gyun Kang (luckypanda@snu.ac.kr)
