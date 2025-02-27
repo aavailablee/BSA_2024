@@ -69,15 +69,25 @@ class Momentum_batch_learnable(nn.Module):
             out = torch.matmul(lhs, self.mul_tensor[:,:, :batch+1, :batch])  # out: C,3,F,b
 
         out = torch.cat((self.momentum_matrix, out), dim=3)  # C, 3, F, 1 + C, 3,F,B --> 3,F,B+1
+        # momentum_matrix才保留历史相关的
         self.momentum_matrix = out[...,-1:].clone().detach() # C, 3,F,1
-        out = out[...,:-1] # C,3,F,B
+        out = out[...,:-1] # C,3,F,B 因为momentumMatrix是上一个batch计算出来的保留历史信息的最后一组
         if not self.cfg.bptt:
             out = out.detach()
 
+        # learnable_matrix和mul_matrix相比，mul其实是momentum相关以及指数那一部分，而XXXlearnable_matrix是保留历史数据相关XXX
+        # momentum_params_learnable控制时间维度上的衰减速率，即每个通道在不同动量参数下的衰减速度，而learnable_matrix则是在特征维度上对不同动量步长的贡献进行加权，从而调整最终的输出向量。前者更侧重于时间动态的控制，后者侧重于特征空间的融合。
+        # 生成混合权重，给出vector，初始就是普通频谱那样
         matrix = torch.softmax(self.learnable_matrix, dim=1)  # C, 7, F
 
         matrix_1 = 2*(matrix[:,N+1:,:]-torch.flip(matrix[:,:N,:], (1,))) # C, 3,F
         matrix_2 = (2*torch.sum(matrix[:,:N,:], dim=1, keepdim=True)+matrix[:, N:N+1,:]) # C, 1, F
+
+        '''
+        matrix_1	加速度（趋势变化率）	增强短期波动与趋势反转信号（如股价突破点）
+        matrix_2	惯性项（维持当前状态）	保留长期趋势与原始特征（如季节性与基线水平）
+        out	        多尺度动量融合	        综合不同时间窗的平滑特征（EMA、加权移动平均）
+        '''
 
         # Combine the updated momentum_matrix with the learnable_matrix to produce the final vector
         vector = torch.transpose(torch.mul(matrix_1.unsqueeze(3), out).sum(dim=1), 1,2)+torch.mul(matrix_2, vector)

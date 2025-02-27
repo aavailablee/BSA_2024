@@ -3,8 +3,8 @@ import torch.nn as nn
 import numpy as np
 from math import sqrt
 from utils.masking import TriangularCausalMask, ProbMask
-from reformer_pytorch import LSHSelfAttention
-from einops import rearrange, repeat
+# from reformer_pytorch import LSHSelfAttention
+# from einops import rearrange, repeat
 
 
 class Momentum(nn.Module): 
@@ -17,6 +17,7 @@ class Momentum(nn.Module):
         
         temp = torch.zeros_like(self.momentum_matrix)
         for idx in range(len(self.cfg.momentum_params) * 2 + 1):
+            ## 倒反的数值，最开始最大，中间为0，后面为负数，会因为softmax变为0
             temp[:, idx:idx + 1, :] = torch.ones(self.channels, 1, vector_len) * (-(((len(self.cfg.momentum_params) - idx) ** 2) / 4))
         self.learnable_matrix = nn.Parameter(temp)
 
@@ -31,6 +32,7 @@ class Momentum(nn.Module):
             alpha = torch.tensor(self.cfg.momentum_params).to(vector.device).unsqueeze(0).unsqueeze(2)   # alpha.shape = (1, 3, 1)
             
             new_momentum_matrix = torch.zeros_like(self.momentum_matrix) # shape = (channels, 7, vector_len)
+            # 0先加0.5倍的输入
             new_momentum_matrix[:, N] += 0.5 * vector.squeeze(0) # shape = (channels, vector_len)
             # self.momentum_matrix[:, N+1:].detach().shape = (channels, 3, vector_len), vector.squeeze(0).unsqueeze(1).shape = (channels, 1, vector_len), # alpha.shape = (1, 3, 1)
             new_momentum_matrix[:, N+1:] = alpha * self.momentum_matrix[:, N+1:].detach() + (1 - alpha) * vector.squeeze(0).unsqueeze(1)
